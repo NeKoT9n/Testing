@@ -1,0 +1,81 @@
+﻿<Window x:Class="TestWPF.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:cmd ="clr-namespace:TestWPF.Commands"
+        xmlns:vm ="clr-namespace:TestWPF.ViewModels"
+        xmlns:oxy="http://oxyplot.org/wpf"
+        xmlns:local="clr-namespace:TestWPF"
+        mc:Ignorable="d"
+        Title="{Binding Title}"
+        Height="450"
+        Width="800" >
+    <Window.Resources>
+        <SolidColorBrush x:Key="clBr" Color="White" />
+    </Window.Resources>
+    <Window.DataContext>
+        <vm:MainWindowViewModel/>
+    </Window.DataContext>
+    <DockPanel>
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="Файл">
+                <MenuItem Header="Выход">
+                    <MenuItem.Command>
+                        <cmd:CloseApplicationCommand/>
+                    </MenuItem.Command>
+                </MenuItem>
+            </MenuItem>
+        </Menu>
+        <StatusBar DockPanel.Dock="Bottom">
+            <StatusBarItem >
+                <TextBlock Text="{Binding Status}"/>
+            </StatusBarItem>
+            <StatusBarItem>
+                <ProgressBar Height="12" Width="100" Margin="15,0"/>
+            </StatusBarItem>
+        </StatusBar>
+        <TabControl>
+            <TabItem Header="Общее">
+                <Grid>
+                    <DataGrid AutoGenerateColumns="False" Grid.Column="1" ItemsSource="{Binding Users}" IsReadOnly="True">
+                        <DataGrid.Columns >
+                            <DataGridTextColumn Header="Фио"  Binding="{Binding Name}" Width="*"/>
+                            <DataGridTextColumn Header="Шаги" Binding="{Binding Steps}" Width="*"/>
+                            <DataGridTextColumn Header="Среднее" Binding="{Binding AvarageResult}" Width="*"/>
+                            <DataGridTextColumn Header="Лучший результат" Binding="{Binding AvarageResult}" Width="*"/>
+                            <DataGridTextColumn Header="Худший результат" Binding="{Binding WorstResult}" Width="*"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Пользователи">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width ="250*"/>
+                        <ColumnDefinition Width="800*"/>
+                    </Grid.ColumnDefinitions>
+                    <GroupBox Header="Пользователи" Grid.Column="0">
+                        <DockPanel>
+                            <UniformGrid DockPanel.Dock ="Bottom" Rows ="1" Margin="0,3">
+                                <Button Content="Сохранить в файл" Command="{Binding SaveModelInFileCommand}" CommandParameter="{Binding SelectedUser}"/>
+                            </UniformGrid>
+                            <ListBox ItemsSource="{Binding Users}" DisplayMemberPath="Name" SelectedItem="{Binding SelectedUser}">
+                        </ListBox>
+                            </DockPanel>
+                    </GroupBox>
+                    <GroupBox Header="{Binding SelectedUser.Name}" Grid.Column="1">
+                        <oxy:Plot>
+                            <oxy:Plot.Axes>
+                                <oxy:LinearAxis Title="Шаги"  Position="Left" AxisTitleDistance="2"/>
+                                <oxy:LinearAxis Title="Дни" Minimum="0" Maximum="31" Position="Bottom"/>
+                            </oxy:Plot.Axes>
+                            <oxy:LineSeries Color="Red" ItemsSource="{Binding DataPoints}" DataFieldX="X" DataFieldY="Y"/>
+                        </oxy:Plot>
+                    </GroupBox>
+                </Grid>
+            </TabItem>
+        </TabControl>
+
+    </DockPanel>
+</Window>
